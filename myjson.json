@@ -1,0 +1,26 @@
+{
+	"foo_get":
+	{
+		"inp_file":"pp.p",
+		"out_file":"pp.out",
+		"params":
+		[	
+			{"var":"query"},
+			{"var":"query"},
+			{"var":"query"},
+			{"var":"query"}		
+		]
+	},
+	"foo_post":
+	{
+		"inp_file":"pp.p",
+		"out_file":"pp.out",
+		"params":
+		[
+			{"var":"query"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"query"}
+		]
+	}
+}
