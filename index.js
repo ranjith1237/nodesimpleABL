@@ -1,23 +1,15 @@
-var express = require('express');
-var fileUpload = require('express-fileupload');
-var path = require('path');
 var fs = require('fs');
+var path = require('path');
+var fileUpload = require('express-fileupload');
 var url = require('url');
 var bodyParser = require('body-parser');
 var qs = require('querystring');
 
-var app = express();
-app.use(fileUpload());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-app.use(bodyParser.json());
 
-
-app.get("/runABL/:fname", function(req,res){
+exports.getABL = function(url_get,method){
 	var obj;
 	var str='';
-	var url_parts = url.parse(req.url, true);
+	var url_parts = url.parse(url_get, true);
 	var query = url_parts.query;  // command line inputs throught the url
 	var length = 0;
 	for(var i  in query)
@@ -32,8 +24,7 @@ app.get("/runABL/:fname", function(req,res){
 			str = str +","+query[i];
 		}
 	}
-	console.log(str);             
-	method = req.params.fname;
+//	method = req.params.fname;
 	exact_method = method + '_get';
 	fs.readFile('myjson.json', 'utf8', function (err, data) {
 	  if (err) 
@@ -45,7 +36,6 @@ app.get("/runABL/:fname", function(req,res){
 	  var len_json = Object.keys(op).length;
 	  if(length==len_json)
 	  {
-	  	 	res.send("length matches");
 	  	 	var file_name = obj[exact_method].inp_file;
 	  	 	var filePath = 'C:/Users/ranreddy/Documents/node/uploads/'+file_name;
 	  	 	console.log(filePath);
@@ -82,6 +72,7 @@ app.get("/runABL/:fname", function(req,res){
 				   }
 				   console.log("Asynchronous read: " +data.toString());  // prints the output text....
 				});
+				return "working";
 			}
 			else
 			{
@@ -90,26 +81,24 @@ app.get("/runABL/:fname", function(req,res){
 	  }
 	  else
 	  {
-	  		res.send("Error : number of parameters doesnt match");
+	  		return "Error : number of parameters doesnt match";
+	//  		res.send("Error : number of parameters doesnt match");
 	  }
-	});	
-});
+	});
+}
 
-app.post("/runABL/:fname",function(req,res){
-	var url_parts = url.parse(req.url, true);
+
+exports.postABL = function(url_post,body_params,method)
+{
+	var url_parts = url.parse(url_post, true);
 	var query = url_parts.query;  // query conatins input parameters through url
 	var query_length = Object.keys(query).length;
 
-	var v = req.body;    //  req.body contains the input parameters through the body
+	var v = body_params;    //  req.body contains the input parameters through the body
 	var body_length = Object.keys(v).length;
   	
-  	var method = req.params.fname;
+// 	var method = req.params.fname;
 	var exact_method = method + '_post';
-	res.send(exact_method);
-
-	console.log(v);
-	console.log(query);
-
   	fs.readFile('myjson.json', 'utf8', function (err, data) {
 	  if (err) throw err;
 	  obj = JSON.parse(data);
@@ -133,6 +122,7 @@ app.post("/runABL/:fname",function(req,res){
 	  	 		var str='';
 	  	 		for(var i in op)
 	  	 		{
+	  	 			console.log(i+"   "+op[i].var);
 		  	 		if(op[i].var=='body'){
 		  	 			b_len++;
 		  	 			var temp = "par"+b_len;
@@ -155,7 +145,7 @@ app.post("/runABL/:fname",function(req,res){
 		  	 			}
 		  	 			else
 		  	 			{
-		  	 				str=str+','+v[temp];	
+		  	 				str=str+','+query[temp];	
 		  	 			}
 		  	 			
 		  	 		}		
@@ -163,7 +153,6 @@ app.post("/runABL/:fname",function(req,res){
 	  	 		console.log('my string is : '+str);
 	  	 		var file_name = obj[exact_method].inp_file;
 		  	 	var filePath = 'C:/Users/ranreddy/Documents/node/uploads/'+file_name;
-		  	 	console.log(filePath);
 		  	 	function fileExists(filePath)
 				{
 				    try
@@ -209,24 +198,35 @@ app.post("/runABL/:fname",function(req,res){
 	  	 	}
 	  	 	else
 	  	 	{
-	  			res.send("Error : number of parameters doesnt match");	 		
+	  	 		return 'Error : number of parameters doesnt match';
+       //	  	res.send("Error : number of parameters doesnt match");	 		
 	  	 	}
 	  }
 	  else
 	  {
-	  		res.send("Error : number of parameters doesnt match");
+		  	return 'Error : number of parameters doesnt match';
+	  	//	res.send("Error : number of parameters doesnt match");
 	  }
-	});	
-});
+	});
+}
+
+
+
+
+
+
+
 
 // uplaod a zip file that has *.p files.......
-app.post("/publish",function(req,res){	
-	if(!req.files)
+exports.upload_file = function(f_name)
+{
+	if(!f_name)
 	{
-		res.send('No files are uploaded');
-		return;
+	//	res.send('No files are uploaded');
+		return 'NO file exists';
 	}
-	var tempfile = req.files.body;
+	var tempfile = f_name.body;
+	console.log("file name: " + tempfile.name);
 	tempfile.mv("uploads/"+tempfile.name, function(err){
 		if(err)
 		{
@@ -237,13 +237,8 @@ app.post("/publish",function(req,res){
 			const decompress = require('decompress'); 
 			decompress('uploads/'+tempfile.name, 'uploads/').then(files => {
 			});
-			res.send('file uploaded!!!!');
+			console.log('file uploaded');
+			return 'file uploaded!!';
 		}
-	});
-});
-
-var server = app.listen(8081, function () {
-  var host = server.address().address
-  var port = server.address().port
-  console.log("Example app listening at  port %s",  port)
-})
+	});	
+}

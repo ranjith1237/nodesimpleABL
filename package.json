@@ -1,0 +1,23 @@
+{
+  "name": "nodesimpleabl",
+  "version": "1.0.0",
+  "description": "This module helps you to upload and run the ABL files using a express.js application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ranjith1237/nodesimpleABL.git"
+  },
+  "keywords": [
+    "nodeabl",
+    "simplenodeabl"
+  ],
+  "author": "ranjith",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ranjith1237/nodesimpleABL/issues"
+  },
+  "homepage": "https://github.com/ranjith1237/nodesimpleABL#readme"
+}
