@@ -1,8 +1,7 @@
-
 //usage of nodesimpleABL
 
 var express = require('express');
-var nodeabl1=require('nodeabl1');
+var nodesimpleabl=require('nodesimpleabl');
 var fileUpload = require('express-fileupload');
 var app = express();
 var bodyParser = require('body-parser');
@@ -15,20 +14,17 @@ app.use(bodyParser.json());
 
 
 app.get("/runABL/:fname",function(req,res){
-	nodeabl1.getABL(req.url,req.params.fname);
+	nodesimpleabl.getABL(req.url,req.params.fname);
 });
 
 app.post("/runABL/:fname",function(req,res){
-	nodeabl1.postABL(req.url,req.body,req.params.fname);
+	nodesimpleabl.postABL(req.url,req.body,req.params.fname);
 	res.send('posted');
 });
 
 app.post("/publish",function(req,res){
-	nodeabl1.upload_file(req.files);
-	
+	nodesimpleabl.upload_file(req.files);
 });
-
-
 
 var server = app.listen(8081, function () {
   var host = server.address().address
