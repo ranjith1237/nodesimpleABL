@@ -56,11 +56,11 @@ exports.getABL = function(url_get,method){
 				const exec = require('child_process').execSync;
 				if(str=='')
 				{
-					exec('C:/Progress/Openedge/bin/_progres.exe -p '+ filePath + ' -b');    
+					exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -b');    
 				}
 				else
 				{
-					exec('C:/Progress/Openedge/bin/_progres.exe -p '+filePath+' -param ' + str+' -b');    
+					exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+filePath+' -param ' + str+' -b');    
 				}
 				
 				// Asynchronous read
@@ -171,11 +171,11 @@ exports.postABL = function(url_post,body_params,method)
 					const exec = require('child_process').execSync;
 					if(str=='')
 					{
-						exec('C:/Progress/Openedge/bin/_progres.exe -p '+ filePath + ' -b');    
+						exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -b');    
 					}
 					else
 					{
-						exec('C:/Progress/Openedge/bin/_progres.exe -p '+ filePath + ' -param ' +str+' -b');
+						exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -param ' +str+' -b');
 					}
 		
 
@@ -209,13 +209,6 @@ exports.postABL = function(url_post,body_params,method)
 	  }
 	});
 }
-
-
-
-
-
-
-
 
 // uplaod a zip file that has *.p files.......
 exports.upload_file = function(f_name)
