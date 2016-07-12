@@ -5,7 +5,6 @@ var url = require('url');
 var bodyParser = require('body-parser');
 var qs = require('querystring');
 
-
 exports.getABL = function(url_get,method){
 	var obj;
 	var str='';
@@ -66,12 +65,12 @@ exports.getABL = function(url_get,method){
 			}
 			else
 			{
-				console.log('No such file exists');
+				return 'No such file exists';
 			}				
 	  }
 	  else
 	  {
-	  	console.log("Error : number of parameters doesnt match");
+		  	return 'Error : number of parameters doesnt match';
 	  }
 }
 
