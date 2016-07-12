@@ -26,11 +26,7 @@ exports.getABL = function(url_get,method){
 	}
 //	method = req.params.fname;
 	exact_method = method + '_get';
-	fs.readFile('myjson.json', 'utf8', function (err, data) {
-	  if (err) 
-	  {
-	  	throw err;
-	  }
+	var data = fs.readFileSync('myjson.json', 'utf8');
 	  obj = JSON.parse(data);
 	  var op = obj[exact_method].params;
 	  var len_json = Object.keys(op).length;
@@ -62,17 +58,11 @@ exports.getABL = function(url_get,method){
 				{
 					exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+filePath+' -param ' + str+' -b');    
 				}
-				
 				// Asynchronous read
 				var outputfile = file_name.split(".")[0]+".out";
-				fs.readFile(outputfile, function(err, data) {       // reading from the output file.......
-				   if (err)
-				   {
-				       return console.error(err);
-				   }
-				   console.log("Asynchronous read: " +data.toString());  // prints the output text....
-				});
-				return "working";
+				var response = fs.readFileSync(outputfile, 'utf8');
+				console.log(response);
+				return response;
 			}
 			else
 			{
@@ -81,10 +71,8 @@ exports.getABL = function(url_get,method){
 	  }
 	  else
 	  {
-	  		return "Error : number of parameters doesnt match";
-	//  		res.send("Error : number of parameters doesnt match");
+	  	console.log("Error : number of parameters doesnt match");
 	  }
-	});
 }
 
 

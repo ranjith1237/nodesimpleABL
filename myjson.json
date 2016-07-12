@@ -22,5 +22,40 @@
 			{"var":"body"},
 			{"var":"query"}
 		]
+	},
+	"getCustomer_get":
+	{
+		"inp_file":"node_getCustomer.p",
+		"out_file":"node_getCustomer.out",
+		"params":
+		[	
+			{"var":"query"}
+		]
+	},
+	"createCustomer_post":
+	{
+		"inp_file":"node_createCustomer.p",
+		"out_file":"node_createCustomer.out",
+		"params":
+		[]
+	},
+	"too_get":
+	{
+		"inp_file":"node_UpdateCustomer.p",
+		"out_file":"node_UpdateCustomer.out",
+		"params":
+		[	
+			{"var":"query"},
+			{"var":"query"}
+		]
+	},
+	"goo_get":
+	{
+		"inp_file":"node_createCustomer.p",
+		"out_file":"node_createCustomer.out",
+		"params":
+		[
+			{"var":"query"}
+		]
 	}
 }
