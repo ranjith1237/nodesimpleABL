@@ -9,11 +9,11 @@ exports.getABL = function(url_get,method){
 	var obj;
 	var str='';
 	var url_parts = url.parse(url_get, true);
-	var query = url_parts.query;  // command line inputs throught the url
+	var query = url_parts.query;  
 	var length = 0;
 	for(var i  in query)
 	{
-		length++;					//length tells the number of parameters.....
+		length++;					//number of parameters.....
 		if(str=='')
 		{
 			str = query[i];
@@ -23,7 +23,6 @@ exports.getABL = function(url_get,method){
 			str = str +","+query[i];
 		}
 	}
-//	method = req.params.fname;
 	exact_method = method + '_get';
 	var data = fs.readFileSync('myjson.json', 'utf8');
 	  obj = JSON.parse(data);
@@ -33,7 +32,6 @@ exports.getABL = function(url_get,method){
 	  {
 	  	 	var file_name = obj[exact_method].inp_file;
 	  	 	var filePath = 'C:/Users/ranreddy/Documents/node/uploads/'+file_name;
-	  	 	console.log(filePath);
 	  	 	function fileExists(filePath)
 			{
 			    try
@@ -47,7 +45,7 @@ exports.getABL = function(url_get,method){
 			}
 			if(fileExists(filePath)) // file is present
 			{
-				// spawn and exec the progress command.......
+				// spawn the child....
 				const exec = require('child_process').execSync;
 				if(str=='')
 				{
@@ -57,10 +55,8 @@ exports.getABL = function(url_get,method){
 				{
 					exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+filePath+' -param ' + str+' -b');    
 				}
-				// Asynchronous read
 				var outputfile = file_name.split(".")[0]+".out";
-				var response = fs.readFileSync(outputfile, 'utf8');
-				console.log(response);
+				var response = fs.readFileSync(outputfile, 'utf8');// read the output file.....
 				return response;
 			}
 			else
@@ -83,8 +79,7 @@ exports.postABL = function(url_post,body_params,method)
 
 	var v = body_params;    //  req.body contains the input parameters through the body
 	var body_length = Object.keys(v).length;
-  	
-// 	var method = req.params.fname;
+
 	var exact_method = method + '_post';
   	fs.readFile('myjson.json', 'utf8', function (err, data) {
 	  if (err) throw err;
@@ -109,7 +104,6 @@ exports.postABL = function(url_post,body_params,method)
 	  	 		var str='';
 	  	 		for(var i in op)
 	  	 		{
-	  	 			console.log(i+"   "+op[i].var);
 		  	 		if(op[i].var=='body'){
 		  	 			b_len++;
 		  	 			var temp = "par"+b_len;
@@ -134,10 +128,8 @@ exports.postABL = function(url_post,body_params,method)
 		  	 			{
 		  	 				str=str+','+query[temp];	
 		  	 			}
-		  	 			
 		  	 		}		
 	  	 		}
-	  	 		console.log('my string is : '+str);
 	  	 		var file_name = obj[exact_method].inp_file;
 		  	 	var filePath = 'C:/Users/ranreddy/Documents/node/uploads/'+file_name;
 		  	 	function fileExists(filePath)
@@ -181,32 +173,133 @@ exports.postABL = function(url_post,body_params,method)
 				{
 					console.log('No such file exists');
 				}					  	 		
-	  	 		console.log(str);
 	  	 	}
 	  	 	else
 	  	 	{
-	  	 		return 'Error : number of parameters doesnt match';
-       //	  	res.send("Error : number of parameters doesnt match");	 		
+	  	 		return 'Error: Parametes are not given properly';
 	  	 	}
 	  }
 	  else
 	  {
 		  	return 'Error : number of parameters doesnt match';
-	  	//	res.send("Error : number of parameters doesnt match");
 	  }
 	});
 }
+
+exports.delABL = function(url_get,body_params,method){
+	var url_parts = url.parse(url_get, true);
+	var query = url_parts.query;
+	var query_length = Object.keys(query).length;
+
+	var v = body_params;
+	var body_length = Object.keys(v).length;
+	
+	var data = fs.readFileSync('myjson.json', 'utf8');
+	var obj = JSON.parse(data);
+	var exact_method = method + '_delete';
+	var op = obj[exact_method].params;
+	var len_json = Object.keys(op).length;
+	if(len_json==query_length+body_length)
+	{
+		var b_len=0,q_len=0;
+  	 	for(var i in op)
+  	 	{
+  	 		if(op[i].var=='body'){
+  	 			b_len++;
+  	 		}
+  	 		else{
+  	 			q_len++;
+  	 		}
+  	 	}
+  	 	if(b_len==body_length&&q_len==query_length)
+  	 	{
+  	 		b_len=0;q_len=0;
+	  	 	var str='';
+	  	 	var temp;
+	  	 	for(var i in op)
+	  	 	{	
+	  	 		if(op[i].var=='body')
+	  	 		{
+	  	 			b_len++;
+	  	 			temp = "par"+b_len;
+	  	 			if(str=='')
+	  	 			{
+	  	 				str=str+v[temp];
+	  	 			}
+	  	 			else
+	  	 			{
+	  	 				str=str+','+v[temp];	
+	  	 			}
+	  	 		}
+	  	 		else
+	  	 		{
+	  	 			q_len++;
+	  	 			temp = "par"+q_len;
+	  	 			if(str=='')
+	  	 			{
+	  	 				str=str+query[temp];
+	  	 			}
+	  	 			else
+	  	 			{
+	  	 				str=str+','+query[temp];	
+	  	 			}
+	  	 		}
+	  	 	}
+  	 		var file_name = obj[exact_method].inp_file;
+	  	 	var filePath = 'C:/Users/ranreddy/Documents/node/uploads/'+file_name;
+	  	 	function fileExists(filePath)
+			{
+			    try
+			    {
+			        return fs.statSync(filePath).isFile();
+			    }
+			    catch (err)
+			    {
+			        return false;
+			    }
+			}
+			if(fileExists(filePath)) // file is present
+			{
+				// spawn and exec the progress command.......
+				console.log(str);
+				const exec = require('child_process').execSync;
+				if(str=='')
+				{
+					exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -b');    
+				}
+				else
+				{
+					exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -param ' +str+' -b');
+				}
+				var outputfile = file_name.split(".")[0]+".out";
+				var response = fs.readFileSync(outputfile, 'utf8');	// read the output file.....
+				return response;
+			}
+			else
+			{
+				return 'No such file exists';
+			}
+  	 	}
+  	 	else
+  	 	{
+  	 		return 'Error: Parametes are not given properly';
+  	 	}
+	}
+	else
+	{
+		return 'Error: Number of parameters donot match';
+	}
+}
+
 
 // uplaod a zip file that has *.p files.......
 exports.upload_file = function(f_name)
 {
 	if(!f_name)
 	{
-	//	res.send('No files are uploaded');
 		return 'NO file exists';
 	}
 	var tempfile = f_name.body;
-	console.log("file name: " + tempfile.name);
 	tempfile.mv("uploads/"+tempfile.name, function(err){
 		if(err)
 		{
@@ -217,7 +310,6 @@ exports.upload_file = function(f_name)
 			const decompress = require('decompress'); 
 			decompress('uploads/'+tempfile.name, 'uploads/').then(files => {
 			});
-			console.log('file uploaded');
 			return 'file uploaded!!';
 		}
 	});	

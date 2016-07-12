@@ -15,18 +15,18 @@ app.use(bodyParser.json());
 
 
 app.get("/runABL/:fname",function(req,res){
-	var ret = nodesimpleabl.getABL(req.url,req.params.fname);
-	res.send(ret);
+	var response = nodesimpleabl.getABL(req.url,req.params.fname);
+	res.send(response);
 });
 
 app.post("/runABL/:fname",function(req,res){
-	nodesimpleabl.postABL(req.url,req.body,req.params.fname);
-	res.send('posted');
+	var response = nodesimpleabl.postABL(req.url,req.body,req.params.fname);
+	res.send(response);
 });
 
 app.post("/publish",function(req,res){
-	nodesimpleabl.upload_file(req.files);
-	res.send('uploaded');
+	var response = nodesimpleabl.upload_file(req.files);
+	res.send(response);
 });
 
 var server = app.listen(8081, function () {
