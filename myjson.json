@@ -17,10 +17,23 @@
 		"out_file":"pp.out",
 		"params":
 		[
-			{"var":"query"},
 			{"var":"body"},
 			{"var":"body"},
-			{"var":"query"}
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"}
 		]
 	},
 	"getCustomer_get":
@@ -37,7 +50,25 @@
 		"inp_file":"node_createCustomer.p",
 		"out_file":"node_createCustomer.out",
 		"params":
-		[]
+		[	
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"},
+			{"var":"body"}
+		]
 	},
 	"delCustomer_delete":
 	{
