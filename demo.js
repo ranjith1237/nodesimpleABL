@@ -24,6 +24,12 @@ app.post("/runABL/:fname",function(req,res){
 	res.send(response);
 });
 
+
+app.put("/runABL/:fname",function(req,res){
+	var response = nodesimpleabl.putABL(req.url,req.body,req.params.fname);
+	res.send(response);
+});
+
 app.delete("/runABL/:fname",function(req,res){
 	var response = nodesimpleabl.delABL(req.url,req.body,req.params.fname);
 	res.send(response);
