@@ -6,16 +6,27 @@ var bodyParser = require('body-parser');
 var qs = require('querystring');
 var jsonfile = require('jsonfile')
 
+function fileExists(filePath)
+{
+    try
+    {
+        return fs.statSync(filePath).isFile();
+    }
+    catch (err)
+    {
+        return false;
+    }
+}
+
+
+
 exports.getABL = function(url_get,method)
 {
-	var obj;
 	var str='';
 	var url_parts = url.parse(url_get, true);
 	var query = url_parts.query;  
-	var length = 0;
 	for(var i  in query)
 	{
-		length++;					//number of parameters.....
 		if(str=='')
 		{
 			str = query[i];
@@ -27,49 +38,33 @@ exports.getABL = function(url_get,method)
 	}
 	exact_method = method + '_get';
 	var data = fs.readFileSync('myjson.json', 'utf8');
-	  obj = JSON.parse(data);
-	  var op = obj[exact_method].params;
-	  var len_json = Object.keys(op).length;
-	  if(length==len_json)
-	  {
-	  	 	var file_name = obj[exact_method].inp_file;
-	  	 	var filePath = 'C:/Users/ranreddy/Documents/node/uploads/'+file_name;
-	  	 	function fileExists(filePath)
-			{
-			    try
-			    {
-			        return fs.statSync(filePath).isFile();
-			    }
-			    catch (err)
-			    {
-			        return false;
-			    }
-			}
-			if(fileExists(filePath)) // file is present
-			{
-				// spawn the child....
-				const exec = require('child_process').execSync;
-				if(str=='')
-				{
-					exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -b');    
-				}
-				else
-				{
-					exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+filePath+' -param ' + str+' -b');    
-				}
-				var outputfile = file_name.split(".")[0]+".out";
-				var response = fs.readFileSync(outputfile, 'utf8');// read the output file.....
-				return response;
-			}
-			else
-			{
-				return 'No such file exists';
-			}				
-	  }
-	  else
-	  {
-		  	return 'Error : number of parameters doesnt match';
-	  }
+	var obj = JSON.parse(data);
+	var op = obj[exact_method].params;
+ 	var file_name = obj[exact_method].inp_file;
+ 	var filePath = obj["PATH"].ABLFILE+file_name;
+ 	var dlc = obj["PATH"].DLC;
+ 	var db = obj["PATH"].DB;
+ 	var append = dlc+' -db '+ db+' -p '+filePath;
+	if(fileExists(filePath)) // file is present
+	{
+		// spawn the child....
+		const exec = require('child_process').execSync;
+		if(str=='')
+		{
+			exec(append +' -b');    
+		}
+		else
+		{
+			exec(  append + ' -param ' + str+' -b');    
+		}
+		var outputfile = file_name.split(".")[0]+".out";
+		var response = fs.readFileSync(outputfile, 'utf8');// read the output file.....
+		return response;
+	}
+	else
+	{
+		return 'No such file exists';
+	}				
 }
 
 
@@ -80,7 +75,6 @@ exports.postABL = function(url_post,body_params,method)
 	var query = url_parts.query;  // query conatins input parameters through url
 	var query_length = Object.keys(query).length;
 	var v = body_params;    //  req.body contains the input parameters through the body
-
 
 	var exact_method = method + '_post';
 	var data = fs.readFileSync('myjson.json', 'utf8');
@@ -107,18 +101,10 @@ exports.postABL = function(url_post,body_params,method)
 	var file = 'temp.json';
 	jsonfile.writeFileSync(file, js, {spaces: 2});  // writing into a json file....
 	var file_name = obj[exact_method].inp_file;
- 	var filePath = 'C:/Users/ranreddy/Documents/node/uploads/'+file_name;
- 	function fileExists(filePath)
-	{
-	    try
-	    {
-	        return fs.statSync(filePath).isFile();
-	    }
-	    catch (err)
-	    {
-	        return false;
-	    }
-	}
+ 	var filePath = obj["PATH"].ABLFILE+file_name;
+ 	var dlc = obj["PATH"].DLC;
+ 	var db = obj["PATH"].DB;
+ 	var append = dlc+' -db '+ db+' -p '+filePath;
 	str = file;
 	if(fileExists(filePath)) // file is present
 	{
@@ -126,11 +112,11 @@ exports.postABL = function(url_post,body_params,method)
 		const exec = require('child_process').execSync;
 		if(str=='')
 		{
-			exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -b');    
+			exec(append +' -b');  
 		}
 		else
 		{
-			exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -param ' +str+' -b');
+			exec(  append + ' -param ' + str+' -b');    
 		}
 		var outputfile = file_name.split(".")[0]+".out";
 		var response = fs.readFileSync(outputfile, 'utf8');	// read the output file.....
@@ -269,10 +255,13 @@ exports.putABL = function(url_get,body_params,method){
 	var file = 'temp.json';
 	str = id+','+file;
 	delete js["id"];
-	console.log(js);
 	jsonfile.writeFileSync(file, js, {spaces: 2});
 	var file_name = obj[exact_method].inp_file;
- 	var filePath = 'C:/Users/ranreddy/Documents/node/uploads/'+file_name;
+ 	var filePath = obj["PATH"].ABLFILE+file_name;
+ 	var dlc = obj["PATH"].DLC;
+ 	var db = obj["PATH"].DB;
+ 	var append = dlc+' -db '+ db+' -p '+filePath;
+ 	console.log(append);
  	function fileExists(filePath)
 	{
 	    try
@@ -290,11 +279,11 @@ exports.putABL = function(url_get,body_params,method){
 		const exec = require('child_process').execSync;
 		if(str=='')
 		{
-			exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -b');    
+			exec(append +' -b');  
 		}
 		else
 		{
-			exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -param ' +str+' -b');
+			exec(  append + ' -param ' + str+' -b');    
 		}
 		var outputfile = file_name.split(".")[0]+".out";
 		var response = fs.readFileSync(outputfile, 'utf8');	// read the output file.....
@@ -318,7 +307,6 @@ exports.delABL = function(url_get,body_params,method){
 	var obj = JSON.parse(data);
 	var exact_method = method + '_delete';
 	var op = obj[exact_method].params;
-	var len_json = Object.keys(op).length;
 	var str='';
 	for(var i in op)
 	{
@@ -352,29 +340,21 @@ exports.delABL = function(url_get,body_params,method){
 		}
 	}
 	var file_name = obj[exact_method].inp_file;
-	var filePath = 'C:/Users/ranreddy/Documents/node/uploads/'+file_name;
-	function fileExists(filePath)
-	{
-	    try
-	    {
-	        return fs.statSync(filePath).isFile();
-	    }
-	    catch (err)
-	    {
-	        return false;
-	    }
-	}
+	var filePath = obj["PATH"].ABLFILE+file_name;
+ 	var dlc = obj["PATH"].DLC;
+ 	var db = obj["PATH"].DB;
+ 	var append = dlc+' -db '+ db+' -p '+filePath;
 	if(fileExists(filePath)) // file is present
 	{
 		// spawn and exec the progress command.......
 		const exec = require('child_process').execSync;
 		if(str=='')
 		{
-			exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -b');    
+			exec(append +' -b');  
 		}
 		else
 		{
-			exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -param ' +str+' -b');
+			exec(  append + ' -param ' + str+' -b');    
 		}
 		var outputfile = file_name.split(".")[0]+".out";
 		var response = fs.readFileSync(outputfile, 'utf8');	// read the output file.....

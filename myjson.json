@@ -5,10 +5,7 @@
 		"out_file":"pp.out",
 		"params":
 		[	
-			{"var":"query"},
-			{"var":"query"},
-			{"var":"query"},
-			{"var":"query"}		
+			{"var":"query"}
 		]
 	},
 	"foo_post":
@@ -17,22 +14,7 @@
 		"out_file":"pp.out",
 		"params":
 		[
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
+			{"var":"query"},
 			{"var":"body"}
 		]
 	},
@@ -52,22 +34,7 @@
 		"params":
 		[	
 			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"},
-			{"var":"body"}
+			{"var":"query"}
 		]
 	},
 	"delCustomer_delete":
@@ -76,16 +43,24 @@
 		"out_file":"node_delCustomer.out",
 		"params":
 		[	
+			{"var":"query"},
 			{"var":"body"}
 		]
 	},
-	"goo_get":
+	"UpdateCustomer_put":
 	{
-		"inp_file":"node_createCustomer.p",
-		"out_file":"node_createCustomer.out",
+		"inp_file":"node_UpdateCustomer.p",
+		"out_file":"node_UpdateCustomer.out",
 		"params":
 		[
-			{"var":"query"}
+			{"var":"query"},
+			{"var":"body"}
 		]
+	},
+	"PATH":
+	{
+		"DLC":"C:/Progress/Openedge/bin/_progres.exe",
+		"DB":"C:/OpenEdge/WRK/sports2000",
+		"ABLFILE":"C:/Users/ranreddy/Documents/node/uploads/"
 	}
 }

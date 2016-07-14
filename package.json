@@ -1,6 +1,6 @@
 {
   "name": "nodesimpleabl",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "This module helps you to upload and run the ABL files using a express.js application.",
   "main": "index.js",
   "scripts": {
