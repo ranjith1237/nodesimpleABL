@@ -17,34 +17,73 @@ function fileExists(filePath)
         return false;
     }
 }
-
-
-
-exports.getABL = function(url_get,method)
+exports.getABL = function(url_get)
 {
 	var str='';
+	var error_status={};
 	var url_parts = url.parse(url_get, true);
 	var query = url_parts.query;  
-	for(var i  in query)
-	{
-		if(str=='')
-		{
-			str = query[i];
-		}
-		else
-		{
-			str = str +","+query[i];
-		}
-	}
-	exact_method = method + '_get';
-	var data = fs.readFileSync('myjson.json', 'utf8');
+	var path_param = url_parts.pathname.split('/'); 
+	var exact_method = path_param[2] + '_get';
+	var data = fs.readFileSync('config.json', 'utf8');
 	var obj = JSON.parse(data);
 	var op = obj[exact_method].params;
- 	var file_name = obj[exact_method].inp_file;
- 	var filePath = obj["PATH"].ABLFILE+file_name;
- 	var dlc = obj["PATH"].DLC;
- 	var db = obj["PATH"].DB;
- 	var append = dlc+' -db '+ db+' -p '+filePath;
+	var cnt = 0;
+	var offset = 3;
+ 	for(var i in op)
+ 	{
+ 		cnt++;
+ 		var input = 'param'+cnt;
+		var result = op[i][input].split('.');
+		if(result[0]=='query')
+		{
+			if(query.hasOwnProperty(result[1]))
+			{
+				if(str=='')
+				{
+					str = query[result[1]];
+				}
+				else
+				{
+					str = str +","+query[result[1]];
+				}
+			}
+			else
+			{
+				error_status[result[1]]="query parameter is missing";
+				return error_status;
+			}
+		}
+		else if(result[0]=='path')
+		{
+			if(offset<path_param.length)
+			{
+				if(str=='')
+				{
+					str = path_param[offset];
+				}
+				else
+				{
+					str = str +","+path_param[offset];
+				}
+			}
+			else
+			{
+				error_status[result[1]]="path parameter is missing";
+				return error_status;	
+			}
+			offset++;
+		}
+ 	}
+ 	var file_name = obj[exact_method].ABLFILE;
+ 	var filePath = obj[exact_method].ABLFILELOC+file_name;
+ 	var dlc = obj["PATH"].DLC+'bin/_progres.exe';
+ 	var append = dlc;
+ 	if(obj[exact_method].hasOwnProperty("DB"))
+ 	{
+ 		append =append + ' -db '+ obj[exact_method].DB;
+ 	}
+ 	append = append+' -p '+filePath;
 	if(fileExists(filePath)) // file is present
 	{
 		// spawn the child....
@@ -55,57 +94,110 @@ exports.getABL = function(url_get,method)
 		}
 		else
 		{
-			exec(  append + ' -param ' + str+' -b');    
+			exec(append + ' -param ' + str+' -b');    
 		}
-		var outputfile = file_name.split(".")[0]+".out";
-		var response = fs.readFileSync(outputfile, 'utf8');// read the output file.....
+		var response = fs.readFileSync(obj[exact_method].OUTFILE, 'utf8');// read the output file.....
 		return response;
 	}
 	else
 	{
-		return 'No such file exists';
-	}				
+		error_status["config.json"]="File doesen't exist";
+		return error_status;
+	}			
 }
 
 
-exports.postABL = function(url_post,body_params,method)
+exports.postABL = function(url_post,body_params)
 {
-	var js = {};
+	var js;
+	var str='';
+	var error_status={};
 	var url_parts = url.parse(url_post, true);
 	var query = url_parts.query;  // query conatins input parameters through url
-	var query_length = Object.keys(query).length;
-	var v = body_params;    //  req.body contains the input parameters through the body
-
-	var exact_method = method + '_post';
-	var data = fs.readFileSync('myjson.json', 'utf8');
+	var path_param = url_parts.pathname.split('/'); // path parameters.....
+	var v = body_params;    // body parametrs
+	var exact_method = path_param[2] + '_post';
+	var data = fs.readFileSync('config.json', 'utf8');
 	obj = JSON.parse(data);
 	var op = obj[exact_method].params;
+	var cnt=0;
+	var offset=3;
 	for(var i in op)
 	{
-		if(op[i].var=='query')
+		cnt++;
+ 		var input = 'param'+cnt;
+		var result = op[i][input].split('.');
+		if(result[0]=='path')
 		{
-			for(var j in query)
+			if(offset<path_param.length)
 			{
-				js[j]=query[j];
-			}				
+				if(str=='')
+				{
+					str = path_param[offset];
+				}
+				else
+				{
+					str = str +","+path_param[offset];
+				}
+			}
+			else
+			{
+				error_status[result[1]]="path parameter is missing";
+				return error_status;	
+			}
+			offset++;
 		}
-		else if(op[i].var=='body')
+		else if(result[0]=='query')
 		{
-			for(var j in v) 
+			if(query.hasOwnProperty(result[1]))
 			{
-				js[j]=v[j];
+				if(str=='')
+				{
+					str = query[result[1]];
+				}
+				else
+				{
+					str = str +","+query[result[1]];
+				}
+			}
+			else
+			{
+				error_status[result[1]]="query parameter is missing";
+				return error_status;
 			}
 		}
+		else if(result[0]=='body')
+		{
+			if(v.hasOwnProperty(result[1]))
+			{
+				if(str=='')
+				{
+					str = result[1]+'.json';
+				}
+				else
+				{
+					str = str +","+result[1]+'.json';
+				}
+				var js = v[result[1]];
+				jsonfile.writeFileSync(result[1]+'.json', js, {spaces: 2});  // writing into a json file....
+			}
+			else
+			{
+				error_status[result[1]]="body parameters are missing";
+				return error_status;
+			}		
+		}
+		
 	}
-	
-	var file = 'temp.json';
-	jsonfile.writeFileSync(file, js, {spaces: 2});  // writing into a json file....
-	var file_name = obj[exact_method].inp_file;
- 	var filePath = obj["PATH"].ABLFILE+file_name;
- 	var dlc = obj["PATH"].DLC;
- 	var db = obj["PATH"].DB;
- 	var append = dlc+' -db '+ db+' -p '+filePath;
-	str = file;
+	var file_name = obj[exact_method].ABLFILE;
+ 	var filePath = obj[exact_method].ABLFILELOC+file_name;
+ 	var dlc = obj["PATH"].DLC+'bin/_progres.exe';
+ 	var append = dlc;
+ 	if(obj[exact_method].hasOwnProperty("DB"))
+ 	{
+ 		append =append + ' -db '+ obj[exact_method].DB;
+ 	}
+ 	append = append+' -p '+filePath;
 	if(fileExists(filePath)) // file is present
 	{
 		// spawn and exec the progress command.......
@@ -116,152 +208,112 @@ exports.postABL = function(url_post,body_params,method)
 		}
 		else
 		{
-			exec(  append + ' -param ' + str+' -b');    
+			exec(append + ' -param ' + str+' -b');    
 		}
-		var outputfile = file_name.split(".")[0]+".out";
-		var response = fs.readFileSync(outputfile, 'utf8');	// read the output file.....
+		var response = fs.readFileSync(obj[exact_method].OUTFILE, 'utf8');
 		return response;
 	}
 	else
 	{
-		return 'No such file exists';
-	}				  	 		
-	/*if(body_length+query_length==len_json)
-	{
-  		var b_len=0,q_len=0;
-  	 	for(var i in op)
-  	 	{
-  	 		if(op[i].var=='body'){
-  	 			b_len++;
-  	 		}
-  	 		else{
-  	 			q_len++;
-  	 		}
-  	 	}
-  	 	if(b_len==body_length&&q_len==query_length)
-  	 	{
-  	 		b_len=0;q_len=0;
-  	 		var str='';
-  	 		for(var i in op)
-  	 		{
-	  	 		if(op[i].var=='body'){
-	  	 			b_len++;
-	  	 			var bcnt=0;
-	  	 			for(var j in v)
-	  	 			{
-	  	 				bcnt++;
-	  	 				if(bcnt==b_len)
-	  	 				{
-	  	 					js[j] = v[j];
-	  	 				}
-	  	 			}
-	  	 		}
-	  	 		else
-	  	 		{
-	  	 			q_len++;
-	  	 			var qcnt=0;
-	  	 			for(var j in query)
-	  	 			{
-	  	 				qcnt++;
-	  	 				if(qcnt==q_len)
-	  	 				{
-	  	 					js[j] = query[j];
-	  	 				}
-	  	 			}
-	  	 		}		
-  	 		}
-  	 		
-			var file = 'temp.json';
-			jsonfile.writeFileSync(file, js, {spaces: 2});
- 	 		var file_name = obj[exact_method].inp_file;
-	  	 	var filePath = 'C:/Users/ranreddy/Documents/node/uploads/'+file_name;
-	  	 	function fileExists(filePath)
-			{
-			    try
-			    {
-			        return fs.statSync(filePath).isFile();
-			    }
-			    catch (err)
-			    {
-			        return false;
-			    }
-			}
-			str = file;
-			if(fileExists(filePath)) // file is present
-			{
-				// spawn and exec the progress command.......
-				const exec = require('child_process').execSync;
-				if(str=='')
-				{
-					exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -b');    
-				}
-				else
-				{
-					exec('C:/Progress/Openedge/bin/_progres.exe -db C:/OpenEdge/WRK/sports2000 -p '+ filePath + ' -param ' +str+' -b');
-				}
-				var outputfile = file_name.split(".")[0]+".out";
-				var response = fs.readFileSync(outputfile, 'utf8');	// read the output file.....
-				return response;
-			}
-			else
-			{
-				return 'No such file exists';
-			}				  	 		
-  	 	}
-	 	else
-	 	{
-	 		return 'Error: Parametes are not given properly';
-	 	}
-	}
-    else
-  	{
-		return 'Error : number of parameters doesnt match';
-  	}*/
+		error_status["config.json"]="File doesen't exist";
+		return error_status;
+	}  	 		
 }
 
 
 
 
-exports.putABL = function(url_get,body_params,method){
-	var js = {};
-	var url_parts = url.parse(url_get, true);
+exports.putABL = function(url_post,body_params){
+	var js;
+	var str='';
+	var error_status={};
+	var url_parts = url.parse(url_post, true);
 	var query = url_parts.query;  // query conatins input parameters through url
-
+	var path_param = url_parts.pathname.split('/'); // path parameters.....
 
 	var v = body_params;    //  req.body contains the input parameters through the body
 
-	var exact_method = method + '_put';
-	var data = fs.readFileSync('myjson.json', 'utf8');
+	var exact_method = path_param[2] + '_put';
+	var data = fs.readFileSync('config.json', 'utf8');
 	obj = JSON.parse(data);
 	var op = obj[exact_method].params;
+	var cnt=0;
+	var offset=3;
 	for(var i in op)
 	{
-		if(op[i].var=='query')
+		cnt++;
+ 		var input = 'param'+cnt;
+		var result = op[i][input].split('.');
+		if(result[0]=='path')
 		{
-			for(var j in query)
+			if(offset<path_param.length)
 			{
-				js[j]=query[j];
-			}				
+				if(str=='')
+				{
+					str = path_param[offset];
+				}
+				else
+				{
+					str = str +","+path_param[offset];
+				}
+			}
+			else
+			{
+				error_status[result[1]]="path parameter is missing";
+				return error_status;	
+			}
+			offset++;
 		}
-		else if(op[i].var=='body')
+		else if(result[0]=='query')
 		{
-			for(var j in v) 
+			if(query.hasOwnProperty(result[1]))
 			{
-				js[j]=v[j];
+				if(str=='')
+				{
+					str = query[result[1]];
+				}
+				else
+				{
+					str = str +","+query[result[1]];
+				}
+			}
+			else
+			{
+				error_status[result[1]]="query parameter is missing";
+				return error_status;
 			}
 		}
+		else if(result[0]=='body')
+		{
+			if(v.hasOwnProperty(result[1]))
+			{
+				if(str=='')
+				{
+					str = result[1]+'.json';
+				}
+				else
+				{
+					str = str +","+result[1]+'.json';
+				}
+				var js = v[result[1]];
+				jsonfile.writeFileSync(result[1]+'.json', js, {spaces: 2});  // writing into a json file....
+			}
+			else
+			{
+				error_status[result[1]]="body parameters are missing";
+				return error_status;
+			}		
+		}	
 	}
-	var id = js["id"];
-	var file = 'temp.json';
-	str = id+','+file;
-	delete js["id"];
-	jsonfile.writeFileSync(file, js, {spaces: 2});
-	var file_name = obj[exact_method].inp_file;
- 	var filePath = obj["PATH"].ABLFILE+file_name;
- 	var dlc = obj["PATH"].DLC;
- 	var db = obj["PATH"].DB;
- 	var append = dlc+' -db '+ db+' -p '+filePath;
- 	console.log(append);
+	var file_name = obj[exact_method].ABLFILE;
+ 	var filePath = obj[exact_method].ABLFILELOC+file_name;
+ 	var dlc = obj["PATH"].DLC+'bin/_progres.exe';
+ 	var append = dlc;
+ 	if(obj[exact_method].hasOwnProperty("DB"))
+ 	{
+ 		append =append + ' -db '+ obj[exact_method].DB;
+ 	}
+ 	append = append+' -p '+filePath;
  	function fileExists(filePath)
 	{
 	    try
@@ -285,65 +337,107 @@ exports.putABL = function(url_get,body_params,method){
 		{
 			exec(  append + ' -param ' + str+' -b');    
 		}
-		var outputfile = file_name.split(".")[0]+".out";
-		var response = fs.readFileSync(outputfile, 'utf8');	// read the output file.....
+		var response = fs.readFileSync(obj[exact_method].OUTFILE, 'utf8');
 		return response;
 	}
 	else
 	{
-		return 'No such file exists';
+		error_status["config.json"]="File doesen't exist";
+		return error_status;
 	}
 }
 
 
 
-exports.delABL = function(url_get,body_params,method){
+exports.delABL = function(url_get,body_params){
+	var js;
+	var str='';
+	var error_status={};
 	var url_parts = url.parse(url_get, true);
 	var query = url_parts.query;
-
+	var path_param = url_parts.pathname.split('/'); 
 	var v = body_params;
-
-	var data = fs.readFileSync('myjson.json', 'utf8');
+	var data = fs.readFileSync('config.json', 'utf8');
 	var obj = JSON.parse(data);
-	var exact_method = method + '_delete';
+	var exact_method = path_param[2] + '_delete';
 	var op = obj[exact_method].params;
-	var str='';
+	var cnt=0;
+	var offset=3;
 	for(var i in op)
 	{
-		if(op[i].var=='query')
+		cnt++;
+ 		var input = 'param'+cnt;
+		var result = op[i][input].split('.');
+		if(result[0]=='path')
 		{
-			for(var j in query)
+			if(offset<path_param.length)
 			{
 				if(str=='')
-  	 			{
-  	 				str=str+query[j];
-  	 			}
-  	 			else
-  	 			{
-  	 				str=str+','+query[j];	
-  	 			}
-			}				
+				{
+					str = path_param[offset];
+				}
+				else
+				{
+					str = str +","+path_param[offset];
+				}
+			}
+			else
+			{
+				error_status[result[1]]="path parameter is missing";
+				return error_status;	
+			}
+			offset++;
 		}
-		else if(op[i].var=='body')
+		else if(result[0]=='query')
 		{
-			for(var j in v) 
+			if(query.hasOwnProperty(result[1]))
 			{
 				if(str=='')
-  	 			{
-  	 				str=str+v[j];
-  	 			}
-  	 			else
-  	 			{
-  	 				str=str+','+v[j];	
-  	 			}
+				{
+					str = query[result[1]];
+				}
+				else
+				{
+					str = str +","+query[result[1]];
+				}
+			}
+			else
+			{
+				error_status[result[1]]="query parameter is missing";
+				return error_status;
 			}
 		}
+		else if(result[0]=='body')
+		{
+			if(v.hasOwnProperty(result[1]))
+			{
+				if(str=='')
+				{
+					str = result[1]+'.json';
+				}
+				else
+				{
+					str = str +","+result[1]+'.json';
+				}
+				var js = v[result[1]];
+				jsonfile.writeFileSync(result[1]+'.json', js, {spaces: 2});  // writing into a json file....
+			}
+			else
+			{
+				error_status[result[1]]="body parameters are missing";
+				return error_status;
+			}		
+		}
 	}
-	var file_name = obj[exact_method].inp_file;
-	var filePath = obj["PATH"].ABLFILE+file_name;
- 	var dlc = obj["PATH"].DLC;
- 	var db = obj["PATH"].DB;
- 	var append = dlc+' -db '+ db+' -p '+filePath;
+	var file_name = obj[exact_method].ABLFILE;
+ 	var filePath = obj[exact_method].ABLFILELOC+file_name;
+ 	var dlc = obj["PATH"].DLC+'bin/_progres.exe';
+ 	var append = dlc;
+ 	if(obj[exact_method].hasOwnProperty("DB"))
+ 	{
+ 		append =append + ' -db '+ obj[exact_method].DB;
+ 	}
+ 	append = append+' -p '+filePath;
 	if(fileExists(filePath)) // file is present
 	{
 		// spawn and exec the progress command.......
@@ -354,15 +448,15 @@ exports.delABL = function(url_get,body_params,method){
 		}
 		else
 		{
-			exec(  append + ' -param ' + str+' -b');    
+			exec(append + ' -param ' + str+' -b');    
 		}
-		var outputfile = file_name.split(".")[0]+".out";
-		var response = fs.readFileSync(outputfile, 'utf8');	// read the output file.....
+		var response = fs.readFileSync(obj[exact_method].OUTFILE, 'utf8');
 		return response;
 	}
 	else
 	{
-		return 'No such file exists';
+		error_status["config.json"]="File doesen't exist";
+		return error_status;
 	}
 }
 
