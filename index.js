@@ -5,7 +5,6 @@ var url = require('url');
 var bodyParser = require('body-parser');
 var qs = require('querystring');
 var jsonfile = require('jsonfile')
-
 function fileExists(filePath)
 {
     try
@@ -17,6 +16,7 @@ function fileExists(filePath)
         return false;
     }
 }
+
 exports.getABL = function(url_get)
 {
 	var str='';
@@ -30,6 +30,7 @@ exports.getABL = function(url_get)
 	var op = obj[exact_method].params;
 	var cnt = 0;
 	var offset = 3;
+	
  	for(var i in op)
  	{
  		cnt++;
@@ -39,13 +40,29 @@ exports.getABL = function(url_get)
 		{
 			if(query.hasOwnProperty(result[1]))
 			{
-				if(str=='')
+				if(result[1]=='filter')
 				{
-					str = query[result[1]];
+					//write the query[result[1]] into result[1].txt file;;;;;
+					fs.writeFileSync(result[1]+'.txt',query[result[1]],'utf8');
+					if(str=='')
+					{
+						str = result[1]+'.txt';
+					}
+					else
+					{
+						str = str +","+result[1]+'.txt';
+					}	
 				}
 				else
 				{
-					str = str +","+query[result[1]];
+					if(str=='')
+					{
+						str = query[result[1]];
+					}
+					else
+					{
+						str = str +","+query[result[1]];
+					}	
 				}
 			}
 			else
@@ -90,11 +107,11 @@ exports.getABL = function(url_get)
 		const exec = require('child_process').execSync;
 		if(str=='')
 		{
-			exec(append +' -b');    
+			exec(append +' -b');
 		}
 		else
 		{
-			exec(append + ' -param ' + str+' -b');    
+			exec(append + ' -param ' + str+' -b');
 		}
 		var response = fs.readFileSync(obj[exact_method].OUTFILE, 'utf8');// read the output file.....
 		return response;
@@ -103,7 +120,7 @@ exports.getABL = function(url_get)
 	{
 		error_status["config.json"]="File doesen't exist";
 		return error_status;
-	}			
+	}		
 }
 
 
