@@ -16,22 +16,22 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 
-app.get("/runABL/:fname*",function(req,res){
+app.get("/nodeabl/:fname*",function(req,res){
 	 nodesimpleabl.getABL(req.url,res);
 });
 
-app.post("/runABL/:fname*",function(req,res){
+app.post("/nodeabl/:fname*",function(req,res){
 	var response = nodesimpleabl.postABL(req.url,req.body);
 	res.send(response);
 });
 
 
-app.put("/runABL/:fname*",function(req,res){
+app.put("/nodeabl/:fname*",function(req,res){
 	var response = nodesimpleabl.putABL(req.url,req.body);
 	res.send(response);
 });
 
-app.delete("/runABL/:fname*",function(req,res){
+app.delete("/nodeabl/:fname*",function(req,res){
 	var response = nodesimpleabl.delABL(req.url,req.body);
 	res.send(response);
 });

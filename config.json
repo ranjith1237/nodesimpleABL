@@ -1,29 +1,29 @@
 {
-	"getCustomer_get":
+	"Customer_get":
 	{
 		"ABLFILE":"node_getCustomer.p",
 		"OUTFILE":"node_getCustomer.out",
 		"DB":"C:/OpenEdge/WRK/sports2000",
 		"ABLFILELOC":"C:/Users/ranreddy/Documents/node/uploads/",
-		"URL":"/runABL/getCustomer/:amount/:rollname/:age?id=<value>",
+		"URL":"/nodeabl/Customer/id",
 		"params":
 		[	
-			{"param1":"query.id"}
+			{"param1":"path.id"}
 		]
 	},
-	"getCustomers_get":
+	"Customers_get":
 	{
 		"ABLFILE":"node_getCustomers.p",
 		"OUTFILE":"node_getCustomers.out",
 		"DB":"C:/OpenEdge/WRK/sports2000",
 		"ABLFILELOC":"C:/Users/ranreddy/Documents/node/uploads/",
-		"URL":"/runABL/getCustomers?filter='Custnum gt 10 and custnum lte 10000'",
+		"URL":"/nodeabl/Customers?filter='Custnum gt 10 and custnum lte 10000'",
 		"params":
 		[	
 			{"param1":"query.filter"}
 		]
 	},
-	"createCustomer_post":
+	"Customer_post":
 	{
 		"ABLFILE":"node_createCustomer.p",
 		"OUTFILE":"node_createCustomer.out",
@@ -34,7 +34,7 @@
 			{"param1":"body.customer"}
 		]
 	},
-	"delCustomer_delete":
+	"Customer_delete":
 	{
 		"ABLFILE":"node_delCustomer.p",
 		"OUTFILE":"node_delCustomer.out",
@@ -45,7 +45,7 @@
 			{"param1":"path.id"}
 		]
 	},
-	"UpdateCustomer_put":
+	"Customer_put":
 	{
 		"ABLFILE":"node_UpdateCustomer.p",
 		"OUTFILE":"node_UpdateCustomer.out",
