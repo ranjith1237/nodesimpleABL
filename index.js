@@ -17,7 +17,7 @@ function fileExists(filePath)
     }
 }
 
-exports.getABL = function(url_get)
+exports.getABL = function(url_get,res)
 {
 	var str='';
 	var error_status={};
@@ -113,13 +113,15 @@ exports.getABL = function(url_get)
 		{
 			exec(append + ' -param ' + str+' -b');
 		}
-		var response = fs.readFileSync(obj[exact_method].OUTFILE, 'utf8');// read the output file.....
-		return response;
+		var readStream = fs.createReadStream(obj[exact_method].OUTFILE); //give output_filepath
+		readStream.on('open', function () {
+    		readStream.pipe(res);
+  		});
 	}
 	else
 	{
-		error_status["config.json"]="File doesen't exist";
-		return error_status;
+		error_status["config.json"]="The ABL file mapped doesn't exist";
+		res.send(error_status);
 	}		
 }
 
@@ -232,7 +234,7 @@ exports.postABL = function(url_post,body_params)
 	}
 	else
 	{
-		error_status["config.json"]="File doesen't exist";
+		error_status["config.json"]="The ABL file mapped doesn't exist";
 		return error_status;
 	}  	 		
 }
@@ -359,7 +361,7 @@ exports.putABL = function(url_post,body_params){
 	}
 	else
 	{
-		error_status["config.json"]="File doesen't exist";
+		error_status["config.json"]="The ABL file mapped doesn't exist";
 		return error_status;
 	}
 }
@@ -472,7 +474,7 @@ exports.delABL = function(url_get,body_params){
 	}
 	else
 	{
-		error_status["config.json"]="File doesen't exist";
+		error_status["config.json"]="The ABL file mapped doesn't exist";
 		return error_status;
 	}
 }

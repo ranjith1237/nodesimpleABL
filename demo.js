@@ -17,8 +17,7 @@ app.use(bodyParser.json());
 
 
 app.get("/runABL/:fname*",function(req,res){
-	var response = nodesimpleabl.getABL(req.url);
-	res.send(response);
+	 nodesimpleabl.getABL(req.url,res);
 });
 
 app.post("/runABL/:fname*",function(req,res){

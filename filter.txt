@@ -1,0 +1,1 @@
+Custnum  gt 10 and lte 1000
