@@ -1,6 +1,6 @@
 {
   "name": "nodesimpleabl",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "This module helps you to upload and run the ABL files using a express.js application.",
   "main": "index.js",
   "scripts": {
@@ -19,5 +19,15 @@
   "bugs": {
     "url": "https://github.com/ranjith1237/nodesimpleABL/issues"
   },
-  "homepage": "https://github.com/ranjith1237/nodesimpleABL#readme"
+  "homepage": "https://github.com/ranjith1237/nodesimpleABL#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "express-fileupload": "0.0.5",
+    "fs": "0.0.2",
+    "jsonfile": "^2.3.1",
+    "morgan": "^1.7.0",
+    "path": "^0.12.7",
+    "url": "^0.11.0"
+  }
 }
