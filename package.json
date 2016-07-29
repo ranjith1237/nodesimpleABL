@@ -1,6 +1,6 @@
 {
   "name": "nodesimpleabl",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "NodePackage to run the OpenEdge ABL",
   "main": "index.js",
   "scripts": {
@@ -32,6 +32,7 @@
     "express": "^4.14.0",
     "express-fileupload": "0.0.5",
     "fs": "0.0.2",
+    "fs-extra": "^0.30.0",
     "jsonfile": "^2.3.1",
     "morgan": "^1.7.0",
     "path": "^0.12.7",

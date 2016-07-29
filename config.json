@@ -53,7 +53,7 @@
 		"ABLFILELOC":"C:/Users/ranreddy/Documents/node/uploads/",	
 		"params":
 		[
-			{"param1":"query.id"},
+			{"param1":"query.Custnum"},
 			{"param2":"body.customer"}
 		]
 	},

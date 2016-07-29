@@ -1,21 +1,27 @@
-{"custRecord": [
-  {
-    "Country": "USA",
-    "Name": "Navneet",
-    "Address": "Hyderabad",
-    "Address2": "",
-    "City": "Burlington",
-    "State": "MA",
-    "PostalCode": "01730",
-    "Contact": "Gloria Shepley",
-    "Phone": "(617) 450-0086",
-    "SalesRep": "HXM",
-    "CreditLimit": 66700.00,
-    "Balance": 903.64,
-    "Terms": "Net30",
-    "Discount": 35,
-    "Comments": "This customer is on credit hold.",
-    "Fax": "",
-    "EmailAddress": ""
-  }
-]}
+{
+    "customer": {
+        "Country": "USA",
+        "Name": "Navneet",
+        "Address": "Hyderabad",
+        "Address2": "",
+        "City": "Burlington",
+        "State": "MA",
+        "PostalCode": "01730",
+        "Contact": "Gloria Shepley",
+        "Phone": "(617) 450-0086",
+        "SalesRep": "HXM",
+        "CreditLimit": 66700.00,
+        "Balance": 903.64,
+        "Terms": "Net30",
+        "Discount": 35,
+        "Comments": "This customer is on credit hold.",
+        "Fax": "",
+        "EmailAddress": ""
+    },
+    "order": {
+        "Contact":"90102345",
+        "Address":"ILABS,opp inorbit",
+        "Amout":"45623",
+        "Discount":"200"       
+    }
+}
