@@ -4,7 +4,8 @@ var fileUpload = require('express-fileupload');
 var url = require('url');
 var bodyParser = require('body-parser');
 var qs = require('querystring');
-var jsonfile = require('jsonfile')
+var jsonfile = require('jsonfile');
+var fos = require('fs-extra');
 function fileExists(filePath)
 {
     try
@@ -488,6 +489,10 @@ exports.upload_file = function(f_name)
 		return 'NO file exists';
 	}
 	var tempfile = f_name.body;
+
+	if (!fs.existsSync("uploads")){
+    		fs.mkdirSync("uploads");
+	}
 	tempfile.mv("uploads/"+tempfile.name, function(err){
 		if(err)
 		{
@@ -497,8 +502,12 @@ exports.upload_file = function(f_name)
 		{
 			const decompress = require('decompress'); 
 			decompress('uploads/'+tempfile.name, 'uploads/').then(files => {
+					fos.remove('uploads/'+tempfile.name, function (err) {
+				 	 if (err) return console.error(err)
+				  	 return 'Uploaded';
+				})
+				
 			});
-			return 'file uploaded!!';
 		}
 	});	
 }
